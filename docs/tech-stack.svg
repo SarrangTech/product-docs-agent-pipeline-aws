@@ -1,0 +1,116 @@
+<svg width="100%" viewBox="0 0 680 420" role="img" xmlns="http://www.w3.org/2000/svg">
+<title>Tools and technologies used in this pipeline</title>
+<desc>All AWS and open source tools used: Python, boto3, S3, Amazon Bedrock, AWS Lambda, Git</desc>
+<defs>
+<style>
+.t  { font-family: "Anthropic Sans", sans-serif; font-size: 14px; font-weight: 400; fill: var(--text-primary, #1a1a1a); }
+.ts { font-family: "Anthropic Sans", sans-serif; font-size: 12px; font-weight: 400; fill: var(--text-secondary, #595957); }
+.th { font-family: "Anthropic Sans", sans-serif; font-size: 14px; font-weight: 500; fill: var(--text-primary, #1a1a1a); }
+.card { fill: var(--surface-1, #F8F7F3); stroke: var(--border, #D3D1C7); stroke-width: 0.5; }
+@media (prefers-color-scheme: dark) {
+.card { fill: #2C2C2A; stroke: #5F5E5A; }
+.t  { fill: #e8e6de; }
+.ts { fill: #9c9a92; }
+.th { fill: #e8e6de; }
+}
+</style>
+</defs>
+
+<!-- Title -->
+<text class="th" x="40" y="36" dominant-baseline="central" style="font-size:16px">Tech stack</text>
+
+<!-- Row 1: Core language tools -->
+<text class="ts" x="40" y="68" dominant-baseline="central">Language and ingestion</text>
+
+<!-- Python card -->
+<rect class="card" x="40" y="82" width="130" height="90" rx="8"/>
+<!-- Python logo simplified -->
+<rect x="70" y="95" width="30" height="10" rx="3" fill="#3776AB"/>
+<rect x="70" y="107" width="30" height="10" rx="3" fill="#FFD43B"/>
+<rect x="70" y="119" width="30" height="10" rx="3" fill="#3776AB"/>
+<text class="th" x="105" y="102" dominant-baseline="central" style="font-size:13px;fill:#3776AB">Python</text>
+<text class="ts" x="105" y="120" dominant-baseline="central">3.12</text>
+<text class="ts" x="105" y="138" dominant-baseline="central">Core language</text>
+<text class="ts" x="105" y="154" dominant-baseline="central">all 4 scripts</text>
+
+<!-- boto3 card -->
+<rect class="card" x="185" y="82" width="130" height="90" rx="8"/>
+<rect x="200" y="95" width="40" height="28" rx="4" fill="#FF9900"/>
+<text class="ts" x="220" y="113" text-anchor="middle" dominant-baseline="central" style="fill:#fff;font-weight:500">boto3</text>
+<text class="th" x="275" y="102" dominant-baseline="central" style="font-size:13px">boto3</text>
+<text class="ts" x="275" y="120" dominant-baseline="central">AWS SDK</text>
+<text class="ts" x="275" y="138" dominant-baseline="central">S3 reads/writes</text>
+<text class="ts" x="275" y="154" dominant-baseline="central">Bedrock calls</text>
+
+<!-- Git card -->
+<rect class="card" x="330" y="82" width="130" height="90" rx="8"/>
+<polygon points="373,95 393,115 373,135 353,115" fill="#F05032"/>
+<text class="ts" x="373" y="115" text-anchor="middle" dominant-baseline="central" style="fill:#fff;font-weight:500;font-size:11px">git</text>
+<text class="th" x="420" y="102" dominant-baseline="central" style="font-size:13px">Git + GitHub</text>
+<text class="ts" x="420" y="120" dominant-baseline="central">Version control</text>
+<text class="ts" x="420" y="138" dominant-baseline="central">commit SHA</text>
+<text class="ts" x="420" y="154" dominant-baseline="central">idempotent paths</text>
+
+<!-- gzip card -->
+<rect class="card" x="475" y="82" width="130" height="90" rx="8"/>
+<rect x="490" y="95" width="40" height="28" rx="4" fill="#888780"/>
+<text class="ts" x="510" y="113" text-anchor="middle" dominant-baseline="central" style="fill:#fff;font-weight:500;font-size:10px">.gz</text>
+<text class="th" x="545" y="102" dominant-baseline="central" style="font-size:13px">gzip + JSONL</text>
+<text class="ts" x="545" y="120" dominant-baseline="central">Compression</text>
+<text class="ts" x="545" y="138" dominant-baseline="central">16KB → storage</text>
+<text class="ts" x="545" y="154" dominant-baseline="central">all 3 layers</text>
+
+<!-- Row 2: AWS Services -->
+<text class="ts" x="40" y="195" dominant-baseline="central">AWS services</text>
+
+<!-- S3 card -->
+<rect class="card" x="40" y="210" width="130" height="90" rx="8"/>
+<rect x="52" y="222" width="40" height="40" rx="4" fill="#569A31"/>
+<text class="ts" x="72" y="246" text-anchor="middle" dominant-baseline="central" style="fill:#fff;font-weight:500;font-size:10px">S3</text>
+<text class="th" x="108" y="230" dominant-baseline="central" style="font-size:13px">Amazon S3</text>
+<text class="ts" x="108" y="248" dominant-baseline="central">Object storage</text>
+<text class="ts" x="108" y="266" dominant-baseline="central">Bronze, silver</text>
+<text class="ts" x="108" y="282" dominant-baseline="central">and gold layers</text>
+
+<!-- Bedrock card -->
+<rect class="card" x="185" y="210" width="130" height="90" rx="8"/>
+<rect x="197" y="222" width="40" height="40" rx="4" fill="#7B2D8B"/>
+<text class="ts" x="217" y="246" text-anchor="middle" dominant-baseline="central" style="fill:#fff;font-weight:500;font-size:9px">Bedrock</text>
+<text class="th" x="253" y="230" dominant-baseline="central" style="font-size:13px">Bedrock</text>
+<text class="ts" x="253" y="248" dominant-baseline="central">Titan Embed V2</text>
+<text class="ts" x="253" y="266" dominant-baseline="central">768-dim vectors</text>
+<text class="ts" x="253" y="282" dominant-baseline="central">~$0.01 total</text>
+
+<!-- Lambda card -->
+<rect class="card" x="330" y="210" width="130" height="90" rx="8"/>
+<rect x="342" y="222" width="40" height="40" rx="4" fill="#FF9900"/>
+<text class="ts" x="362" y="246" text-anchor="middle" dominant-baseline="central" style="fill:#fff;font-weight:500;font-size:9px">λ Lambda</text>
+<text class="th" x="398" y="230" dominant-baseline="central" style="font-size:13px">AWS Lambda</text>
+<text class="ts" x="398" y="248" dominant-baseline="central">Retrieval tool</text>
+<text class="ts" x="398" y="266" dominant-baseline="central">512MB memory</text>
+<text class="ts" x="398" y="282" dominant-baseline="central">free tier</text>
+
+<!-- IAM card -->
+<rect class="card" x="475" y="210" width="130" height="90" rx="8"/>
+<rect x="487" y="222" width="40" height="40" rx="4" fill="#DD344C"/>
+<text class="ts" x="507" y="246" text-anchor="middle" dominant-baseline="central" style="fill:#fff;font-weight:500;font-size:9px">IAM</text>
+<text class="th" x="543" y="230" dominant-baseline="central" style="font-size:13px">AWS IAM</text>
+<text class="ts" x="543" y="248" dominant-baseline="central">Role-based access</text>
+<text class="ts" x="543" y="266" dominant-baseline="central">S3 read-only</text>
+<text class="ts" x="543" y="282" dominant-baseline="central">Bedrock invoke</text>
+
+<!-- Row 3: Concepts -->
+<text class="ts" x="40" y="325" dominant-baseline="central">Patterns and concepts applied</text>
+
+<rect class="card" x="40" y="340" width="183" height="56" rx="8"/>
+<text class="th" x="60" y="362" dominant-baseline="central">Medallion architecture</text>
+<text class="ts" x="60" y="380" dominant-baseline="central">Bronze → Silver → Gold</text>
+
+<rect class="card" x="237" y="340" width="183" height="56" rx="8"/>
+<text class="th" x="257" y="362" dominant-baseline="central">Semantic retrieval</text>
+<text class="ts" x="257" y="380" dominant-baseline="central">Meaning, not keywords</text>
+
+<rect class="card" x="434" y="340" width="183" height="56" rx="8"/>
+<text class="th" x="454" y="362" dominant-baseline="central">Incremental embedding</text>
+<text class="ts" x="454" y="380" dominant-baseline="central">Hash-gated, near-zero cost</text>
+</svg>
