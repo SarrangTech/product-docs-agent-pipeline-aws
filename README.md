@@ -50,7 +50,7 @@ This separation means you can swap the embedding model tomorrow (re-run gold onl
 
 ## Architecture
 
-![Pipeline architecture](docs/architecture.svg)
+![Pipeline architecture](docs/architecture.png)
 
 ---
 
@@ -69,13 +69,13 @@ This separation means you can swap the embedding model tomorrow (re-run gold onl
 
 How a plain English query becomes a ranked list of relevant passages:
 
-![Retrieval flow](docs/retrieval-flow.svg)
+![Retrieval flow](docs/retrieval-flow.png)
 
 ---
 
 ## Tech Stack
 
-![Tech stack](docs/tech-stack.svg)
+![Tech stack](docs/tech-stack.png)
 
 ---
 
@@ -91,14 +91,16 @@ The Lambda function receives a plain English question, searches all 33 embedded 
 
 A basic installation question. The pipeline should return the README section containing the install command -- not the entire README file.
 
-    aws lambda invoke \
-      --function-name search-docs \
-      --payload '{"body":"{\"query\":\"how do I install aws sdk pandas\",\"top_k\":3}"}' \
-      --region us-east-1 \
-      --cli-binary-format raw-in-base64-out \
-      response.json
+```
+aws lambda invoke \
+  --function-name search-docs \
+  --payload '{"body":"{\"query\":\"how do I install aws sdk pandas\",\"top_k\":3}"}' \
+  --region us-east-1 \
+  --cli-binary-format raw-in-base64-out \
+  response.json
+```
 
-![Query 1 Result](docs/demo-query-1.png)
+![Query 1 Result](docs/demo-query-1.png.png)
 
 Top result (score 0.71): the README chunk containing `pip install awswrangler`. Returned in 181ms across 33 chunks.
 
@@ -108,14 +110,16 @@ Top result (score 0.71): the README chunk containing `pip install awswrangler`. 
 
 A security question. Notice the query never uses the words "architecture decision" or "design doc" -- but the pipeline finds the right document anyway.
 
-    aws lambda invoke \
-      --function-name search-docs \
-      --payload '{"body":"{\"query\":\"how does aws sdk pandas handle IAM permissions\",\"top_k\":3}"}' \
-      --region us-east-1 \
-      --cli-binary-format raw-in-base64-out \
-      response.json
+```
+aws lambda invoke \
+  --function-name search-docs \
+  --payload '{"body":"{\"query\":\"how does aws sdk pandas handle IAM permissions\",\"top_k\":3}"}' \
+  --region us-east-1 \
+  --cli-binary-format raw-in-base64-out \
+  response.json
+```
 
-![Query 2 Result](docs/demo-query-2.png)
+![Query 2 Result](docs/demo-query-2.png.png)
 
 Top result (score 0.87): an internal architecture decision record written by the engineering team documenting their explicit IAM design decision -- not the general README. The pipeline understood intent and surfaced the most authoritative source. Returned in 178ms.
 
@@ -125,14 +129,16 @@ Top result (score 0.87): an internal architecture decision record written by the
 
 A distributed computing question. Tests whether the pipeline can find niche technical content buried inside a large document corpus.
 
-    aws lambda invoke \
-      --function-name search-docs \
-      --payload '{"body":"{\"query\":\"how do I run aws sdk pandas at scale with Ray or Modin\",\"top_k\":3}"}' \
-      --region us-east-1 \
-      --cli-binary-format raw-in-base64-out \
-      response.json
+```
+aws lambda invoke \
+  --function-name search-docs \
+  --payload '{"body":"{\"query\":\"how do I run aws sdk pandas at scale with Ray or Modin\",\"top_k\":3}"}' \
+  --region us-east-1 \
+  --cli-binary-format raw-in-base64-out \
+  response.json
+```
 
-![Query 3 Result](docs/demo-query-3.png)
+![Query 3 Result](docs/demo-query-3.png.png)
 
 Top result (score 0.56): an architecture decision record comparing PyArrow and Pandas-based datasources -- a document a keyword search would never surface for this query. Matched on conceptual similarity between distributed scale patterns. Returned in 200ms.
 
@@ -178,64 +184,70 @@ The retrieval contract -- the Lambda input/output schema -- stays identical acro
 
 ## Repo Structure
 
-    product-docs-agent-pipeline-aws/
-    ingestion/
-        scripts/
-            ingest_docs.py       <- bronze: clone repo, package docs, write to S3
-            refine_silver.py     <- silver: parse, clean, deduplicate
-            build_gold.py        <- gold: chunk, embed via Bedrock, write to S3
-        requirements.txt
-    retrieval/
-        lambda_function.py       <- retrieval tool: query embedding + cosine similarity
-    docs/
-        architecture.svg
-        retrieval-flow.svg
-        tech-stack.svg
-        demo-query-1.png
-        demo-query-2.png
-        demo-query-3.png
-    .gitignore
-    README.md
+```
+product-docs-agent-pipeline-aws/
+ingestion/
+    scripts/
+        ingest_docs.py       <- bronze: clone repo, package docs, write to S3
+        refine_silver.py     <- silver: parse, clean, deduplicate
+        build_gold.py        <- gold: chunk, embed via Bedrock, write to S3
+    requirements.txt
+retrieval/
+    lambda_function.py       <- retrieval tool: query embedding + cosine similarity
+docs/
+    architecture.png
+    retrieval-flow.png
+    tech-stack.png
+    demo-query-1.png.png
+    demo-query-2.png.png
+    demo-query-3.png.png
+.gitignore
+README.md
+```
 
 ---
 
 ## S3 Bucket Layout
 
-    s3://sarang-lake-bronze/
-      source=github/
-        entity=docs/                     <- bronze
-          ingestion_date=YYYY-MM-DD/
-            commit=<sha8>/
-              docs.jsonl.gz
-        entity=docs-silver/              <- silver
-          ingestion_date=YYYY-MM-DD/
-            silver_docs.jsonl.gz
-        entity=docs-gold/                <- gold
-          ingestion_date=YYYY-MM-DD/
-            gold_docs_chunks.jsonl.gz
+```
+s3://sarang-lake-bronze/
+  source=github/
+    entity=docs/                     <- bronze
+      ingestion_date=YYYY-MM-DD/
+        commit=<sha8>/
+          docs.jsonl.gz
+    entity=docs-silver/              <- silver
+      ingestion_date=YYYY-MM-DD/
+        silver_docs.jsonl.gz
+    entity=docs-gold/                <- gold
+      ingestion_date=YYYY-MM-DD/
+        gold_docs_chunks.jsonl.gz
+```
 
 ---
 
 ## Running the Pipeline
 
-    # Step 1: Bronze -- ingest raw docs from GitHub
-    python3 ingestion/scripts/ingest_docs.py
+```
+# Step 1: Bronze -- ingest raw docs from GitHub
+python3 ingestion/scripts/ingest_docs.py
 
-    # Step 2: Silver -- parse, clean, deduplicate
-    python3 ingestion/scripts/refine_silver.py
+# Step 2: Silver -- parse, clean, deduplicate
+python3 ingestion/scripts/refine_silver.py
 
-    # Step 3: Gold -- chunk and embed
-    python3 ingestion/scripts/build_gold.py
+# Step 3: Gold -- chunk and embed
+python3 ingestion/scripts/build_gold.py
 
-    # Step 4: Test retrieval locally
-    python3 -c "
-    import json, sys
-    sys.path.insert(0, 'retrieval')
-    import lambda_function
-    event = {'body': json.dumps({'query': 'how do I install aws sdk pandas', 'top_k': 3})}
-    result = lambda_function.lambda_handler(event, None)
-    print(json.dumps(json.loads(result['body']), indent=2))
-    "
+# Step 4: Test retrieval locally
+python3 -c "
+import json, sys
+sys.path.insert(0, 'retrieval')
+import lambda_function
+event = {'body': json.dumps({'query': 'how do I install aws sdk pandas', 'top_k': 3})}
+result = lambda_function.lambda_handler(event, None)
+print(json.dumps(json.loads(result['body']), indent=2))
+"
+```
 
 ---
 
