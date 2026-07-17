@@ -6,10 +6,10 @@ End-to-end pipeline that ingests product documentation from GitHub, refines it t
 
 | Layer | Status | Tech |
 |---|---|---|
-| Bronze Ingestion | Done | Python, boto3, S3 |
-| Silver Refinement | In progress | AWS Glue / PySpark |
-| Gold Embeddings | Planned | Amazon Bedrock |
-| Retrieval Tool | Planned | AWS Lambda |
+| Bronze Ingestion  | Done | Python, boto3, S3 |
+| Silver Refinement | Done | Python, boto3, S3 |
+| Gold Embeddings   | Done | Amazon Bedrock Titan Embeddings V2 |
+| Retrieval Tool    | In progress | AWS Lambda |
 
 ## Design Decisions
 
@@ -20,4 +20,4 @@ End-to-end pipeline that ingests product documentation from GitHub, refines it t
 
 ## Cost Warning
 
-Current cost: $0.00. S3 storage under 1MB. Will update as layers are added.
+Current cost: ~$0.01 (Amazon Bedrock Titan Embeddings — 33 chunks embedded)
