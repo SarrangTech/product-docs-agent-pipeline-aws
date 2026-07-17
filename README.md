@@ -127,6 +127,85 @@ Output:
 
 Live result: top passage scored 0.71 cosine similarity, 483ms end-to-end latency.
 
+## Live Demo Results
+
+This demo shows the pipeline working end-to-end. We send a plain English question to the 
+Lambda function, it searches through all 33 embedded document chunks, and returns the most 
+relevant passages ranked by how closely they match the meaning of the question -- not just 
+the words. Each result shows which document it came from and a relevance score (closer to 
+1.0 = more relevant).
+
+---
+
+**Query 1: "How do I install aws sdk pandas?"**
+
+We ask a basic installation question. The pipeline should return the README section 
+that contains the install command.
+
+    aws lambda invoke \
+      --function-name search-docs \
+      --payload '{"body":"{\"query\":\"how do I install aws sdk pandas\",\"top_k\":3}"}' \
+      --region us-east-1 \
+      --cli-binary-format raw-in-base64-out \
+      response.json
+
+<img width="572" height="179" alt="Screenshot 2026-07-17 172601" src="https://github.com/user-attachments/assets/803a65d6-7889-45fb-a151-192ed38b3588" />
+
+
+The top result (score 0.71) is the README section containing `pip install awswrangler` -- 
+exactly the right passage. Returned in 181ms.
+
+---
+
+**Query 2: "How does aws sdk pandas handle IAM permissions?"**
+
+We ask about security and permissions. Notice we never use the words "architecture decision" 
+or "design doc" -- but the pipeline finds the right document anyway.
+
+    aws lambda invoke \
+      --function-name search-docs \
+      --payload '{"body":"{\"query\":\"how does aws sdk pandas handle IAM permissions\",\"top_k\":3}"}' \
+      --region us-east-1 \
+      --cli-binary-format raw-in-base64-out \
+      response.json
+
+<img width="659" height="164" alt="Screenshot 2026-07-17 172625" src="https://github.com/user-attachments/assets/b9ac0707-14d4-491c-a236-4fee04647a81" />
+
+
+The top result (score 0.87) is not the README -- it is an internal architecture decision 
+record written by the engineering team specifically documenting their IAM design decision. 
+The pipeline understood the intent of the question and surfaced the most authoritative 
+source, not just the most popular file. Returned in 178ms.
+
+---
+
+**Query 3: "How do I run aws sdk pandas at scale with Ray or Modin?"**
+
+We ask about distributed computing. This tests whether the pipeline can find niche 
+technical content buried inside a large document.
+
+    aws lambda invoke \
+      --function-name search-docs \
+      --payload '{"body":"{\"query\":\"how do I run aws sdk pandas at scale with Ray or Modin\",\"top_k\":3}"}' \
+      --region us-east-1 \
+      --cli-binary-format raw-in-base64-out \
+      response.json
+
+<img width="895" height="153" alt="Screenshot 2026-07-17 172649" src="https://github.com/user-attachments/assets/fb8801af-19ac-4835-82f3-81d97fa11a36" />
+
+
+The top result surfaces the architecture decision record comparing PyArrow and Pandas-based 
+datasources -- a document a keyword search would never find for this query. The pipeline 
+matched on conceptual similarity between "scale" and distributed data processing patterns. 
+Returned in 200ms.
+
+---
+
+**What this proves:** A keyword search for "how do I install" would match dozens of files. 
+This pipeline matches meaning. Query 2 found an internal engineering design doc with no 
+overlap in wording with the question -- that is the difference between keyword search and 
+semantic retrieval.
+
 ## Design Decisions
 
 - Idempotent S3 path: commit SHA in path means re-running at the same commit overwrites the same object, never creates duplicates
