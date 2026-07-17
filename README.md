@@ -148,6 +148,24 @@ Top result (score 0.56): an architecture decision record comparing PyArrow and P
 
 ---
 
+## AWS Infrastructure Proof
+
+All three AWS services are live in us-east-1.
+
+**Amazon S3 -- sarang-lake-bronze bucket**
+
+![S3 bucket](docs/screenshot-s3.png)
+
+**AWS Lambda -- search-docs function (Python 3.12)**
+
+![Lambda function](docs/screenshot-lambda.png)
+
+**Amazon Bedrock -- Titan Text Embeddings V2 (serverless)**
+
+![Bedrock model](docs/screenshot-titan-bedrock.png)
+
+---
+
 ## How to Scale This to Other Domains
 
 This pipeline is domain-agnostic. The only thing that changes between use cases is the GitHub repository you point it at. The entire bronze/silver/gold/retrieval stack transfers unchanged.
@@ -201,6 +219,9 @@ docs/
     demo-query-1.png.png
     demo-query-2.png.png
     demo-query-3.png.png
+    screenshot-s3.png
+    screenshot-lambda.png
+    screenshot-titan-bedrock.png
 .gitignore
 README.md
 ```
