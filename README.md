@@ -51,25 +51,7 @@ This separation means you can swap the embedding model tomorrow (re-run gold onl
 ## Architecture
 
 ![Pipeline architecture](docs/architecture.png)
-```mermaid
-graph TD
-    %% Section 1: Pipeline Architecture
-    subgraph Pipeline [Pipeline Architecture — GitHub to AWS Lambda]
-        A[GitHub repo] -->|clone| B[Bronze S3]
-        B -->|parse| C[Silver S3]
-        C -->|chunk + embed| D[Gold S3]
-        D -->|load| E[Lambda]
-        E -->|JSON| F[AI agent]
-    end
 
-    %% Section 2: Data Layers
-    subgraph Storage [What each layer stores]
-        direction LR
-        Bronze[Bronze Layer<br><br>• doc_path<br>• content raw<br>• content_hash<br>• _commit, _pulled_at]
-        Silver[Silver Layer<br><br>• title parsed<br>• body_for_embed<br>• body_full<br>• deduped by hash]
-        Gold[Gold Layer<br><br>• chunk_id<br>• chunk_text<br>• embedding 768<br>• embedding_model]
-        Lambda[Lambda Function<br><br>• load gold on cold start<br>• embed query<br>• cosine similarity<br>• return top-k JSON]
-    end
 ## Current Status
 
 | Layer | Status | Tech |
