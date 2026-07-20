@@ -51,53 +51,6 @@ This separation means you can swap the embedding model tomorrow (re-run gold onl
 ## Architecture
 
 ![Pipeline architecture](docs/architecture.png)
-graph TD
-    %% Section 1: Pipeline Architecture
-    subgraph "Pipeline Architecture — GitHub to AWS Lambda"
-        A["GitHub repo<br/><small>aws/aws-sdk-pandas</small>"] 
-        B["Bronze (S3)<br/><small>Raw JSONL.gz + provenance</small>"]
-        C["Silver (S3)<br/><small>Cleaned + deduplicated</small>"]
-        D["Gold (S3)<br/><small>768-dim vectors</small>"]
-        E["Lambda<br/><small>Cosine similarity</small>"]
-        F["AI agent<br/><small>Any framework</small>"]
-
-        A -->|clone| B
-        B -->|parse| C
-        C -->|chunk + embed| D
-        D -->|load| E
-        E -->|JSON| F
-    end
-
-    %% Styling Elements to match original colors
-    style A fill:#f3f4f6,stroke:#374151,stroke-width:2px;
-    style B fill:#fef3c7,stroke:#d97706,stroke-width:2px;
-    style C fill:#ecfdf5,stroke:#059669,stroke-width:2px;
-    style D fill:#eff6ff,stroke:#2563eb,stroke-width:2px;
-    style E fill:#f5f3ff,stroke:#7c3aed,stroke-width:2px;
-    style F fill:#f3f4f6,stroke:#374151,stroke-width:2px;
-
-    %% Section 2: Data Layers
-    subgraph "What each layer stores"
-        direction LR
-        subgraph Bronze_Layer ["Bronze"]
-            b1["doc_path<br/>content (raw)<br/>content_hash<br/>_commit, _pulled_at"]
-        end
-        subgraph Silver_Layer ["Silver"]
-            s1["title (parsed)<br/>body_for_embed<br/>body_full<br/>deduped by hash"]
-        end
-        subgraph Gold_Layer ["Gold"]
-            g1["chunk_id<br/>chunk_text<br/>embedding [768]<br/>embedding_model"]
-        end
-        subgraph Lambda_Layer ["Lambda"]
-            l1["load gold on cold start<br/>embed query<br/>cosine similarity<br/>return top-k JSON"]
-        end
-    end
-
-    style Bronze_Layer fill:#fffbeb,stroke:#d97706
-    style Silver_Layer fill:#f0fdf4,stroke:#059669
-    style Gold_Layer fill:#f0f9ff,stroke:#2563eb
-    style Lambda_Layer fill:#faf5ff,stroke:#7c3aed
-
 ---
 
 ## Current Status
