@@ -54,32 +54,22 @@ This separation means you can swap the embedding model tomorrow (re-run gold onl
 ```mermaid
 graph TD
     %% Section 1: Pipeline Architecture
-    subgraph Pipeline ["Pipeline Architecture — GitHub to AWS Lambda"]
-        A[GitHub repo<br><sub>aws/aws-sdk-pandas</sub>] -->|clone| B[Bronze S3<br><sub>Raw JSONL.gz + provenance</sub>]
-        B -->|parse| C[Silver S3<br><sub>Cleaned + deduplicated</sub>]
-        C -->|chunk + embed| D[Gold S3<br><sub>768-dim vectors</sub>]
-        D -->|load| E[Lambda<br><sub>Cosine similarity</sub>]
-        E -->|JSON| F[AI agent<br><sub>Any framework</sub>]
+    subgraph Pipeline [Pipeline Architecture — GitHub to AWS Lambda]
+        A[GitHub repo] -->|clone| B[Bronze S3]
+        B -->|parse| C[Silver S3]
+        C -->|chunk + embed| D[Gold S3]
+        D -->|load| E[Lambda]
+        E -->|JSON| F[AI agent]
     end
 
     %% Section 2: Data Layers
-    subgraph Storage ["What each layer stores"]
+    subgraph Storage [What each layer stores]
         direction LR
-        Bronze["<h3>Bronze</h3>• doc_path<br>• content (raw)<br>• content_hash<br>• _commit, _pulled_at"]
-        Silver["<h3>Silver</h3>• title (parsed)<br>• body_for_embed<br>• body_full<br>• deduped by hash"]
-        Gold["<h3>Gold</h3>• chunk_id<br>• chunk_text<br>• embedding [768]<br>• embedding_model"]
-        Lambda["<h3>Lambda</h3>• load gold on cold start<br>• embed query<br>• cosine similarity<br>• return top-k JSON"]
+        Bronze[Bronze Layer<br><br>• doc_path<br>• content raw<br>• content_hash<br>• _commit, _pulled_at]
+        Silver[Silver Layer<br><br>• title parsed<br>• body_for_embed<br>• body_full<br>• deduped by hash]
+        Gold[Gold Layer<br><br>• chunk_id<br>• chunk_text<br>• embedding 768<br>• embedding_model]
+        Lambda[Lambda Function<br><br>• load gold on cold start<br>• embed query<br>• cosine similarity<br>• return top-k JSON]
     end
-
-    %% Apply minimal styling that won't break GitHub's dark/light themes
-    style A fill:#f3f4f6,stroke:#374151,stroke-width:1px;
-    style B fill:#fffbeb,stroke:#d97706,stroke-width:1px;
-    style C fill:#ecfdf5,stroke:#059669,stroke-width:1px;
-    style D fill:#eff6ff,stroke:#2563eb,stroke-width:1px;
-    style E fill:#f5f3ff,stroke:#7c3aed,stroke-width:1px;
-    style F fill:#f3f4f6,stroke:#374151,stroke-width:1px;
----
-
 ## Current Status
 
 | Layer | Status | Tech |
