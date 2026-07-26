@@ -50,7 +50,8 @@ This separation means you can swap the embedding model tomorrow (re-run gold onl
 
 ## Architecture
 
-![Pipeline architecture](docs/architecture.png)
+<img width="646" height="319" alt="image" src="https://github.com/user-attachments/assets/e891f894-5459-41d1-82ea-e37f40027550" />
+
 
 ## Current Status
 
