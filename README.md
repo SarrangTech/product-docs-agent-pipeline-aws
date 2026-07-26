@@ -203,14 +203,30 @@ The retrieval contract -- the Lambda input/output schema -- stays identical acro
 
 ```
 product-docs-agent-pipeline-aws/
-ingestion/
-    scripts/
-        ingest_docs.py       <- bronze: clone repo, package docs, write to S3
-        refine_silver.py     <- silver: parse, clean, deduplicate
-        build_gold.py        <- gold: chunk, embed via Bedrock, write to S3
-    requirements.txt
+.github/
+    workflows/
+        ci.yml                <- pytest + coverage gate (70% floor) on push/PR
+        lint.yml              <- ruff on push/PR
+pipeline/
+    config.py                 <- env-based configuration, shared by all layers
+    bronze/
+        ingest.py              <- bronze: clone repo, package docs, write to S3
+    silver/
+        refine.py              <- silver: parse, clean, deduplicate
+    gold/
+        embed.py               <- gold: chunk, embed via Bedrock, write to S3
 retrieval/
-    lambda_function.py       <- retrieval tool: query embedding + cosine similarity
+    handler.py                <- Lambda entry point (search-docs): orchestration only
+    search.py                 <- pure cosine similarity + top-k ranking, unit tested
+tests/
+    test_bronze.py
+    test_silver.py
+    test_gold.py
+    test_search.py
+    test_handler.py
+    test_config.py
+scripts/
+    run_pipeline.sh           <- bronze -> silver -> gold in one shot
 docs/
     architecture.png
     retrieval-flow.png
@@ -221,7 +237,12 @@ docs/
     screenshot-s3.png
     screenshot-lambda.png
     screenshot-titan-bedrock.png
+.env.example
 .gitignore
+Makefile
+pyproject.toml
+requirements.txt
+requirements-dev.txt
 README.md
 ```
 
@@ -246,27 +267,51 @@ s3://sarang-lake-bronze/
 
 ---
 
+## Configuration
+
+All configuration is read from environment variables (see `pipeline/config.py`)
+so the same code runs unmodified in CI, local dev, and the deployed Lambda.
+Copy `.env.example` to `.env` and fill in `BRONZE_BUCKET` at minimum; every
+other variable has a sensible default matching current production values.
+
 ## Running the Pipeline
 
 ```
-# Step 1: Bronze -- ingest raw docs from GitHub
-python3 ingestion/scripts/ingest_docs.py
+make install                 # pip install runtime + dev dependencies
 
-# Step 2: Silver -- parse, clean, deduplicate
-python3 ingestion/scripts/refine_silver.py
+make ingest                  # Bronze  -- python -m pipeline.bronze.ingest
+make refine                  # Silver  -- python -m pipeline.silver.refine
+make embed                   # Gold    -- python -m pipeline.gold.embed
+make pipeline                # all three, in order
 
-# Step 3: Gold -- chunk and embed
-python3 ingestion/scripts/build_gold.py
+# or, without make:
+bash scripts/run_pipeline.sh
+```
 
-# Step 4: Test retrieval locally
+Test retrieval locally:
+
+```
 python3 -c "
-import json, sys
-sys.path.insert(0, 'retrieval')
-import lambda_function
+import json
+from retrieval.handler import lambda_handler
 event = {'body': json.dumps({'query': 'how do I install aws sdk pandas', 'top_k': 3})}
-result = lambda_function.lambda_handler(event, None)
+result = lambda_handler(event, None)
 print(json.dumps(json.loads(result['body']), indent=2))
 "
+```
+
+## Development
+
+```
+make test    # pytest with coverage report, fails below 70%
+make lint    # ruff check .
+```
+
+Deploying the retrieval Lambda (requires AWS credentials with
+`lambda:UpdateFunctionCode` on `search-docs`):
+
+```
+make deploy-lambda
 ```
 
 ---
