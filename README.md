@@ -69,6 +69,8 @@ This separation means you can swap the embedding model tomorrow (re-run gold onl
 How a plain English query becomes a ranked list of relevant passages:
 
 ![Retrieval flow](docs/retrieval-flow.png)
+<img width="517" height="236" alt="image" src="https://github.com/user-attachments/assets/d5b68790-72d0-4f9c-af1e-fa023e035a0a" />
+
 
 ---
 
