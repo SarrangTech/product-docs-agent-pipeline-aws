@@ -74,7 +74,7 @@ How a plain English query becomes a ranked list of relevant passages:
 
 ## Tech Stack
 
-![Tech stack](docs/tech-stack.png)
+<img width="523" height="426" alt="image" src="https://github.com/user-attachments/assets/8504225d-94a1-4662-9922-dcf5bfb1fef0" />
 
 ---
 
