@@ -26,7 +26,7 @@ The pipeline does four things:
 
 2. Refines them through a medallion architecture -- bronze for raw, silver for cleaned and normalized, gold for chunked and embedded -- keeping every refinement step inspectable and independently rerunnable
 
-3. Chunks each document into ~500-token passages with overlap and embeds each chunk using Amazon Bedrock Titan Embeddings V2, producing a 768-dimensional vector per passage. Only chunks whose content has changed are re-embedded on each run -- keeping operating cost near zero after the initial load
+3. Chunks each document into 2000-character segments with 200-character overlap and embeds each chunk using Amazon Bedrock Titan Embeddings V2, producing a 768-dimensional vector per passage. Only chunks whose content has changed are re-embedded on each run -- keeping operating cost near zero after the initial load
 
 4. Serves results through an AWS Lambda function that takes a plain English query, embeds it, computes cosine similarity across the full corpus, and returns the top-k most semantically relevant passages in under 500ms
 
