@@ -3,11 +3,27 @@ import gzip
 import hashlib
 import json
 from pathlib import Path
+from typing import Any
 
 import boto3
+from botocore.exceptions import ClientError
 from moto import mock_aws
 
 from pipeline.bronze.ingest import build_records_from_directory, write_bronze_records
+
+
+class _FlakyS3:
+    """Fake S3 client whose put_object fails with a transient error before succeeding."""
+
+    def __init__(self, fail_times: int) -> None:
+        self.fail_times = fail_times
+        self.calls = 0
+
+    def put_object(self, **kwargs: Any) -> dict[str, Any]:
+        self.calls += 1
+        if self.calls <= self.fail_times:
+            raise ClientError({"Error": {"Code": "InternalError", "Message": "boom"}}, "PutObject")
+        return {}
 
 
 def test_build_records_from_directory_reads_markdown_files(tmp_path: Path) -> None:
@@ -71,3 +87,24 @@ def test_write_bronze_records_writes_gzipped_jsonl_to_s3() -> None:
     body = gzip.decompress(obj["Body"].read()).decode("utf-8")
     written = [json.loads(line) for line in body.strip().split("\n")]
     assert written == records
+
+
+def test_write_bronze_records_retries_transient_client_errors() -> None:
+    """Regression test: put_object must not be wrapped in a try/except that swallows
+    ClientError/BotoCoreError before tenacity's retry_if_exception_type ever sees it --
+    doing so silently defeats the retry decorator entirely.
+    """
+    s3 = _FlakyS3(fail_times=2)
+
+    key = write_bronze_records(
+        s3_client=s3,
+        bucket="test-bronze-bucket",
+        records=[{"doc_path": "a.md", "content": "hi", "content_hash": "h"}],
+        ingestion_date="2026-07-26",
+        commit="deadbeefcafe",
+    )
+
+    assert s3.calls == 3
+    assert key == (
+        "source=github/entity=docs/ingestion_date=2026-07-26/commit=deadbeef/docs.jsonl.gz"
+    )

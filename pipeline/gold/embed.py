@@ -145,12 +145,7 @@ def write_gold_records(
     body = "\n".join(json.dumps(record) for record in records).encode("utf-8")
     compressed = gzip.compress(body)
 
-    try:
-        s3_client.put_object(
-            Bucket=bucket, Key=key, Body=compressed, ContentType="application/gzip"
-        )
-    except (ClientError, BotoCoreError) as exc:
-        raise RuntimeError(f"Failed to write gold records to s3://{bucket}/{key}: {exc}") from exc
+    s3_client.put_object(Bucket=bucket, Key=key, Body=compressed, ContentType="application/gzip")
 
     logger.info(
         "Written %d chunks to s3://%s/%s (%.1f KB)",
