@@ -1,0 +1,18 @@
+[project]
+name = "product-docs-agent-pipeline-aws"
+version = "0.1.0"
+description = "End-to-end AWS pipeline that ingests product documentation from GitHub, refines it through a bronze/silver/gold medallion architecture, embeds it using Amazon Bedrock, and exposes a sub-500ms semantic search tool for AI agents."
+authors = [{ name = "B. Sarang" }]
+requires-python = ">=3.12"
+
+[tool.ruff]
+line-length = 100
+
+[tool.ruff.lint]
+select = ["E", "W", "F", "I"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+
+[tool.coverage.report]
+fail_under = 70
