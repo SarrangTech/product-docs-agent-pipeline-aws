@@ -177,7 +177,7 @@ This pipeline is domain-agnostic. The only thing that changes between use cases 
 
 **Clinical and research documentation:** Ingest research papers, clinical guidelines, or protocol documents. The agent surfaces the specific passage relevant to a query without requiring the user to know which document to look in.
 
-**Multi-source corpora:** Run the ingestion script against multiple repositories. The S3 path convention (source=github/entity=docs) is designed to accommodate multiple sources without schema changes. Silver and gold layers deduplicate by content hash across all sources automatically.
+**Multi-source corpora:** Run `make ingest` (or `python -m pipeline.bronze.ingest`) against multiple repositories. The S3 path convention (source=github/entity=docs) is designed to accommodate multiple sources without schema changes. Silver and gold layers deduplicate by content hash across all sources automatically.
 
 The retrieval contract -- the Lambda input/output schema -- stays identical across all of these. Any agent framework (Claude tool use, OpenAI function calling, LangGraph, LlamaIndex) that can call an HTTP endpoint or AWS Lambda can consume this pipeline without modification.
 
@@ -228,9 +228,6 @@ tests/
 scripts/
     run_pipeline.sh           <- bronze -> silver -> gold in one shot
 docs/
-    architecture.png
-    retrieval-flow.png
-    tech-stack.png
     demo-query-1.png.png
     demo-query-2.png.png
     demo-query-3.png.png
@@ -245,6 +242,9 @@ requirements.txt
 requirements-dev.txt
 README.md
 ```
+
+Architecture, retrieval-flow, and tech-stack diagrams are hosted on GitHub's
+`user-attachments` CDN (embedded above) rather than committed under `docs/`.
 
 ---
 
